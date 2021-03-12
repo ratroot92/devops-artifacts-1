@@ -35,19 +35,19 @@ services:
           - db
         command: npm run dev 
 
-  # epeadmin:
-  #     build: ./epeAdmin
-  #     container_name: epeAdmin
-  #     environment:
-  #       - NODE_ENV=development
-  #     ports:
-  #       - 3001:3001
-  #     restart: always
-  #     volumes:
-  #       - ./epeAdmin:/var/www/html/epeAdmin
-  #     depends_on:
-  #       - epeserver
-  #     command: yarn run dev 
+  epeadmin:
+      build: ./epeAdmin
+      container_name: epeAdmin
+      environment:
+        - NODE_ENV=development
+      ports:
+        - 3001:3001
+      restart: always
+      volumes:
+        - ./epeAdmin:/var/www/html/epeAdmin
+      depends_on:
+        - epeserver
+      command: yarn run dev 
 
   epeexam:
       build: ./epeExam
@@ -70,11 +70,11 @@ services:
         - 80:80
       links:
         - phpmyadmin
-        # - epeadmin
+        - epeadmin
         - epeexam
         - epeserver
       depends_on:
         - phpmyadmin
-        # - epeadmin
+        - epeadmin
         - epeexam
         - epeserver
