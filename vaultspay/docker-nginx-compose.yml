@@ -1,0 +1,58 @@
+version: "3.4"
+services:
+
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile.development
+    container_name: nginx
+    restart: always
+    # environment:
+    #       APP_ENV: "prod"
+    #       APP_NAME: "webserver"
+    #       APP_DEBUG: "false"
+    #       SERVICE_NAME: "webserver"
+    ports:
+      - "80:80"
+      - "443:443"
+    # volumes:
+    #   - nginxdata:/var/log/nginx
+
+    # links:
+    #   - auth-microservice
+    #   - banking-engine
+    #   - user-microservice
+    # depends_on:
+    #   - auth-microservice
+    #   - banking-engine
+    #   - user-microservice
+
+version: "3.4"
+services:
+
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile.development
+    container_name: nginx
+    restart: always
+    # environment:
+    #       APP_ENV: "prod"
+    #       APP_NAME: "webserver"
+    #       APP_DEBUG: "false"
+    #       SERVICE_NAME: "webserver"
+    ports:
+      - "80:80"
+      - "443:443"
+    # volumes:
+    #   - nginxdata:/var/log/nginx
+
+    # links:
+    #   - auth-microservice
+    #   - banking-engine
+    #   - user-microservice
+    # depends_on:
+    #   - auth-microservice
+    #   - banking-engine
+    #   - user-microservice
+

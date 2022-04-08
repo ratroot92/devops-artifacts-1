@@ -1,0 +1,53 @@
+version: "3.4"
+services:
+
+  user-microservice:
+    build:
+      context: ./user-microservice/build
+      dockerfile: Dockerfile.development
+    container_name: user-microservice
+    ports:
+      - 3002:3002
+    restart: always
+    volumes:
+      - ./user-microservice:/var/www/burency/user-microservice/build
+      # - /var/www/burency/user-microservice/build/node_modules
+    env_file: 
+      - ./user-microservice/build/.env.development
+    # links:
+    #   - users-db
+    #   - kafka0
+    #   - kafka1
+    # depends_on:
+    #   - users-db
+    #   - kafka0
+    #   - kafka1
+    # networks:
+      # - user-microservice
+
+  users-db:
+    image: mongo:4.0.8
+    container_name: users-db
+    restart: always
+    command: mongod --port 27018
+    # command: mongod --auth
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: 
+      MONGO_INITDB_ROOT_PASSWORD: 
+      MONGO_INITDB_DATABASE: users-db
+      MONGODB_DATA_DIR: /data/db
+      MONDODB_LOG_DIR: /dev/null
+    volumes:
+      - ./data/users-db:/data/db
+    ports:
+      - "27018:27018"
+    # networks:
+    #   - users-db
+
+volumes:
+  user-microservice:
+    driver: local
+
+  users-db:
+    driver: local
+  nginxdata:

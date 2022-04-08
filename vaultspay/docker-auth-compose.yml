@@ -1,0 +1,52 @@
+version: "3.4"
+services:
+
+  auth-microservice:
+    build:
+      context: ./auth-microservice/build
+      dockerfile: Dockerfile.development
+    container_name: auth-microservice
+    ports:
+      - 3001:3001
+    restart: always
+    volumes:
+      - ./auth-microservice:/var/www/burency/auth-microservice/build
+      # - /var/www/burency/auth-microservice/build/node_modules
+    env_file:
+      - ./auth-microservice/build/.env.development
+    # links:
+    #   - auth-db
+    #   - kafka0
+    #   - kafka1
+    # depends_on:
+    #   - auth-db
+    #   - kafka0
+    #   - kafka1
+    # networks:
+      # - auth-microservice
+
+  auth-db:
+    image: mongo:4.0.8
+    container_name: auth-db
+    restart: always
+    command: mongod
+    # command: mongod --auth
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: 
+      MONGO_INITDB_ROOT_PASSWORD: 
+      MONGO_INITDB_DATABASE: auth-db
+      MONGODB_DATA_DIR: /data/db
+      MONDODB_LOG_DIR: /dev/null
+    volumes:
+      - ./data/auth-db:/data/db
+    ports:
+      - "27017:27017"
+    # networks:
+      # - auth-db
+
+volumes:
+  auth-microservice:
+    driver: local
+
+  auth-db:
+    driver: local
