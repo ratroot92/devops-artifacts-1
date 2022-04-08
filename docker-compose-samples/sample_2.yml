@@ -1,0 +1,80 @@
+version: "3.4"
+services: 
+  db:
+    image: mysql #v10.5.8
+    restart: always
+    command: --default-authentication-plugin=mysql_native_password
+    volumes: 
+        - ./db/EPE.sql:/docker-entrypoint-initdb.d/EPE.sql
+    environment:
+        - MYSQL_ROOT_PASSWORD=root
+        - MYSQL_DATABASE=EPE
+    security_opt:
+      - seccomp:unconfined
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    environment:
+      PMA_HOST: db
+      PMA_USER: root # Remove line for production
+      PMA_PASSWORD: root # Remove line for production
+    depends_on:
+      - db
+    ports:
+      - "8080:80"
+  epeserver:
+        build: ./epeServer
+        container_name: epeServer
+        ports:
+          - 5000:5000
+        restart: always
+        volumes:
+          - ./epeServer:/var/www/html/epeServer
+        depends_on:
+          - db
+        command: npm run dev 
+
+  epeadmin:
+      build: ./epeAdmin
+      container_name: epeAdmin
+      environment:
+        - NODE_ENV=development
+      ports:
+        - 3001:3001
+      restart: always
+      volumes:
+        - ./epeAdmin:/var/www/html/epeAdmin
+      depends_on:
+        - epeserver
+      command: yarn run dev 
+
+  epeexam:
+      build: ./epeExam
+      container_name: epeExam
+      environment:
+        - NODE_ENV=development
+      ports:
+        - 3000:3000
+      restart: always
+      volumes:
+          - ./epeExam:/var/www/html/epeExam
+      depends_on:
+        - epeserver
+      command: yarn start
+
+  nginx:
+      build: ./nginx
+      container_name: nginx
+      ports:
+        - 80:80
+      links:
+        - phpmyadmin
+        - epeadmin
+        - epeexam
+        - epeserver
+      depends_on:
+        - phpmyadmin
+        - epeadmin
+        - epeexam
+        - epeserver
