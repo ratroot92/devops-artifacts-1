@@ -1,0 +1,42 @@
+# This pipeline will only run on pushes or merges to the dev branch
+# and deploys to a WAS server via SSH
+
+
+
+pipelines:
+  branches:
+    dev:
+      - step:
+          name: Deploy artifacts using SCP to PROD
+          deployment: production
+          script:
+            - pipe: atlassian/ssh-run:0.4.0
+              variables:
+                SSH_USER: ubuntu
+                SERVER: 3.29.91.55
+                MODE: 'command'
+                COMMAND: 'sudo chmod -R 777 /var/www/vaultspay.dev/ || true && sudo rm -rf /var/www/vaultspay.dev/ || true && sudo mkdir /var/www/vaultspay.dev/'
+
+            - pipe: atlassian/ssh-run:0.4.0
+              variables:
+                SSH_USER: ubuntu
+                SERVER: 3.29.91.55
+                MODE: 'command'
+                COMMAND: 'sudo chmod -R 777 /var/www/vaultspay.dev/'
+
+
+            - pipe: atlassian/scp-deploy:0.3.3
+              variables:
+                USER: ubuntu
+                SERVER: 3.29.91.55
+                REMOTE_PATH: '/var/www/vaultspay.dev'
+                LOCAL_PATH: '${BITBUCKET_CLONE_DIR}/*'
+
+            - pipe: atlassian/ssh-run:0.4.0
+              variables:
+                SSH_USER: ubuntu
+                SERVER: 3.29.91.55
+                MODE: 'command'
+                COMMAND: 'sudo chmod +x /var/www/deploy.sh && /var/www/deploy.sh'
+
+
